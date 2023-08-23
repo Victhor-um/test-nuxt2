@@ -30,9 +30,3 @@ export const actions = {
     commit('setGallery', gallery)
   },
 }
-// лишнее
-// export const getters = {
-//   getGallery(state) {
-//     return state.gallery
-//   },
-// }

@@ -68,7 +68,13 @@ export default {
       return this.gallery.length > 3 && !this.selectedImage
     },
     isFormValid() {
-      return this.image !== null && this.image.type.startsWith('image')
+      return (
+        this.title.length > 0 &&
+        this.description.length > 0 &&
+        this.authorName.length > 0 &&
+        this.image !== null &&
+        this.image.type.startsWith('image')
+      )
     },
   },
   created() {
@@ -77,20 +83,21 @@ export default {
   methods: {
     submitForm() {
       // logic to submit
-      console.log(this.image)
 
       const newImage = {
-        id: Date.now(),
+        title: this.title,
+        description: this.description,
+        authorName: this.authorName,
+        id: Symbol(this.title),
+        uploadDate: new Date(),
         src: URL.createObjectURL(this.image),
       }
-      this.newImage = newImage
       this.$store.commit('gallery/addImage', newImage)
       // // reset form
       this.title = ''
       this.description = ''
       this.authorName = ''
       this.image = null
-      this.newImage = null
     },
   },
 }
