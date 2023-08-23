@@ -19,20 +19,7 @@
       <p v-else>Loading...</p>
     </v-col>
     <v-col cols="12" sm="8" md="6">
-      <v-form>
-        <v-text-field v-model="title" label="Заголовок"></v-text-field>
-        <v-textarea
-          v-model="description"
-          label="Короткое описание"
-          rows="2"
-          row-height="20"
-        ></v-textarea>
-        <v-text-field v-model="authorName" label="Имя автора"></v-text-field>
-        <v-file-input v-model="image" label="Изображение"></v-file-input>
-        <v-btn color="primary" :disabled="!isFormValid" @click="submitForm"
-          >Отправить</v-btn
-        >
-      </v-form>
+      <image-form />
     </v-col>
     <v-dialog v-model="selectedImage" max-width="800">
       <v-carousel v-model="currentIndex" hide-delimiters>
