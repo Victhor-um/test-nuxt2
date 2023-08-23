@@ -3,14 +3,17 @@
     <v-col cols="12" sm="8" md="6">
       <v-carousel
         v-if="gallery.length"
-        :cycle="gallery.length > 4 ? true : null"
-        hide-delimiters
+        :cycle="isCycle"
+        interval="3000"
+        :show-arrows="false"
+        :value="selectedImageIndex"
       >
         <v-carousel-item
           v-for="item in gallery"
           :key="item.id"
           :src="item.src"
           cover
+          @click="selectedImage = item.id"
         ></v-carousel-item>
       </v-carousel>
       <p v-else>Loading...</p>
@@ -21,14 +24,23 @@
         <v-textarea
           v-model="description"
           label="Короткое описание"
+          rows="2"
+          row-height="20"
         ></v-textarea>
         <v-text-field v-model="authorName" label="Имя автора"></v-text-field>
         <v-file-input v-model="image" label="Изображение"></v-file-input>
-        <v-btn color="primary" :disabled="isFormValid" @click="submitForm"
+        <v-btn color="primary" :disabled="!isFormValid" @click="submitForm"
           >Отправить</v-btn
         >
       </v-form>
     </v-col>
+    <v-dialog v-model="selectedImage" max-width="800">
+      <v-carousel hide-delimiters selected-values="[1]">
+        <v-carousel-item v-for="item in gallery" :key="item.id">
+          <v-img :src="item.src" contain></v-img>
+        </v-carousel-item>
+      </v-carousel>
+    </v-dialog>
   </v-row>
 </template>
 
@@ -41,6 +53,8 @@ export default {
       description: '',
       authorName: '',
       image: null,
+      newImage: null,
+      selectedImage: null,
       // isFormValid: false,
     }
   },
@@ -49,13 +63,22 @@ export default {
       console.log(this.$store)
       return this.$store.getters['gallery/getGallery']
     },
+    isCycle() {
+      return this.gallery.length > 3 && !this.selectedImage
+    },
     isFormValid: {
       get() {
-        return this.image !== null && this.image.type === 'image'
+        console.log(this.image)
+        return this.image !== null && this.image.type.startsWith('image')
       },
       set(value) {
         // do nothing
       },
+    },
+    selectedImageIndex() {
+      return (
+        this.gallery.findIndex((item) => item.id === this.selectedImage) || 0
+      )
     },
   },
   created() {
@@ -65,6 +88,19 @@ export default {
     submitForm() {
       // logic to submit
       console.log(this.image)
+
+      const newImage = {
+        id: Date.now(),
+        src: URL.createObjectURL(this.image),
+      }
+      this.newImage = newImage
+      this.$store.commit('gallery/addImage', newImage)
+      // // reset form
+      this.title = ''
+      this.description = ''
+      this.authorName = ''
+      this.image = null
+      this.newImage = null
     },
   },
 }
