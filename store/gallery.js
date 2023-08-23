@@ -22,9 +22,7 @@ export const actions = {
       process.env.API_URL
     )
 
-    const response = await axios.get(
-      `${process.env.API_URL}v1/images/search?limit=3&mime_types=jpg,png&size=small&api_key=${apiKey}`
-    )
+    const response = await axios.get(url.toString())
     const gallery = response.data.map((item) => ({
       id: item.id,
       src: item.url,
@@ -32,9 +30,9 @@ export const actions = {
     commit('setGallery', gallery)
   },
 }
-
-export const getters = {
-  getGallery(state) {
-    return state.gallery
-  },
-}
+// лишнее
+// export const getters = {
+//   getGallery(state) {
+//     return state.gallery
+//   },
+// }

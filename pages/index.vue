@@ -3,10 +3,10 @@
     <v-col cols="12" sm="8" md="6">
       <v-carousel
         v-if="gallery.length"
+        v-model="currentIndex"
         :cycle="isCycle"
         interval="3000"
         :show-arrows="false"
-        :value="selectedImageIndex"
       >
         <v-carousel-item
           v-for="item in gallery"
@@ -14,12 +14,12 @@
           :src="item.src"
           cover
           @click="selectedImage = item.id"
-        ></v-carousel-item>
+        />
       </v-carousel>
       <p v-else>Loading...</p>
     </v-col>
     <v-col cols="12" sm="8" md="6">
-      <v-form v-model="isFormValid">
+      <v-form>
         <v-text-field v-model="title" label="Заголовок"></v-text-field>
         <v-textarea
           v-model="description"
@@ -35,10 +35,12 @@
       </v-form>
     </v-col>
     <v-dialog v-model="selectedImage" max-width="800">
-      <v-carousel hide-delimiters selected-values="[1]">
-        <v-carousel-item v-for="item in gallery" :key="item.id">
-          <v-img :src="item.src" contain></v-img>
-        </v-carousel-item>
+      <v-carousel v-model="currentIndex" hide-delimiters>
+        <v-carousel-item
+          v-for="item in gallery"
+          :key="item.id"
+          :src="item.src"
+        />
       </v-carousel>
     </v-dialog>
   </v-row>
@@ -55,30 +57,18 @@ export default {
       image: null,
       newImage: null,
       selectedImage: null,
-      // isFormValid: false,
+      currentIndex: 0,
     }
   },
   computed: {
     gallery() {
-      console.log(this.$store)
-      return this.$store.getters['gallery/getGallery']
+      return this.$store.state.gallery.gallery
     },
     isCycle() {
       return this.gallery.length > 3 && !this.selectedImage
     },
-    isFormValid: {
-      get() {
-        console.log(this.image)
-        return this.image !== null && this.image.type.startsWith('image')
-      },
-      set(value) {
-        // do nothing
-      },
-    },
-    selectedImageIndex() {
-      return (
-        this.gallery.findIndex((item) => item.id === this.selectedImage) || 0
-      )
+    isFormValid() {
+      return this.image !== null && this.image.type.startsWith('image')
     },
   },
   created() {
