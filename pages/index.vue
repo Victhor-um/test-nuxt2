@@ -30,6 +30,11 @@
         />
       </v-carousel>
     </v-dialog>
+    <div
+      v-if="selectedImage"
+      class="overlay"
+      @click.self="selectedImage = null"
+    ></div>
   </v-row>
 </template>
 
@@ -38,11 +43,6 @@ export default {
   name: 'IndexPage',
   data() {
     return {
-      title: '',
-      description: '',
-      authorName: '',
-      image: null,
-      newImage: null,
       selectedImage: null,
       currentIndex: 0,
     }
@@ -54,38 +54,20 @@ export default {
     isCycle() {
       return this.gallery.length > 3 && !this.selectedImage
     },
-    isFormValid() {
-      return (
-        this.title.length > 0 &&
-        this.description.length > 0 &&
-        this.authorName.length > 0 &&
-        this.image !== null &&
-        this.image.type.startsWith('image')
-      )
-    },
   },
   created() {
     this.$store.dispatch('gallery/fetchGallery')
   },
-  methods: {
-    submitForm() {
-      // logic to submit
-
-      const newImage = {
-        title: this.title,
-        description: this.description,
-        authorName: this.authorName,
-        id: Symbol(this.title),
-        uploadDate: new Date(),
-        src: URL.createObjectURL(this.image),
-      }
-      this.$store.commit('gallery/addImage', newImage)
-      // // reset form
-      this.title = ''
-      this.description = ''
-      this.authorName = ''
-      this.image = null
-    },
-  },
 }
 </script>
+
+<style lang="scss" scoped>
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.85);
+}
+</style>

@@ -1,14 +1,18 @@
 <template>
   <v-form>
-    <v-text-field v-model="title" label="Заголовок"></v-text-field>
+    <v-text-field v-model="form.title" label="Заголовок"></v-text-field>
     <v-textarea
-      v-model="description"
+      v-model="form.description"
       label="Короткое описание"
       rows="2"
       row-height="20"
     ></v-textarea>
-    <v-text-field v-model="authorName" label="Имя автора"></v-text-field>
-    <v-file-input v-model="image" label="Изображение"></v-file-input>
+    <v-text-field v-model="form.authorName" label="Имя автора"></v-text-field>
+    <v-file-input
+      v-model="form.image"
+      label="Изображение"
+      accept="image/png,image/jpeg"
+    />
     <v-btn color="primary" :disabled="!isFormValid" @click="submitForm"
       >Отправить</v-btn
     >
@@ -21,41 +25,44 @@ export default {
 
   data() {
     return {
-      title: '',
-      description: '',
-      authorName: '',
-      image: null,
-      newImage: null,
+      form: {
+        title: '',
+        description: '',
+        authorName: '',
+        image: null,
+      },
     }
   },
   computed: {
     isFormValid() {
+      const { title, description, authorName, image } = this.form
       return (
-        this.title.length > 0 &&
-        this.description.length > 0 &&
-        this.authorName.length > 0 &&
-        this.image !== null &&
-        this.image.type.startsWith('image')
+        title.length > 0 &&
+        description.length > 0 &&
+        authorName.length > 0 &&
+        image !== null &&
+        image.type.startsWith('image')
       )
     },
   },
   methods: {
     submitForm() {
-      // logic to submit
+      const { title, description, authorName, image } = this.form
       const newImage = {
-        title: this.title,
-        description: this.description,
-        authorName: this.authorName,
-        id: Symbol(this.title),
+        title,
+        description,
+        authorName,
+        id: Symbol(title),
         uploadDate: new Date(),
-        src: URL.createObjectURL(this.image),
+        src: URL.createObjectURL(image),
       }
       this.$store.commit('gallery/addImage', newImage)
-      // // reset form
-      this.title = ''
-      this.description = ''
-      this.authorName = ''
-      this.image = null
+      this.form = {
+        title: '',
+        description: '',
+        authorName: '',
+        image: null,
+      }
     },
   },
 }
